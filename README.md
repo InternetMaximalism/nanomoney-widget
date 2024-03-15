@@ -19,7 +19,6 @@ Then, create an instance of the NanoMoneyWidget and mount it to a specific eleme
 ```ts
 const walletWidget = new NanoMoneyWidget("widget-container", {
   clientId: "your-client-id",
-  style: { width: "800px" },
 });
 walletWidget.mount();
 ```
@@ -27,7 +26,7 @@ walletWidget.mount();
 Finally, ensure you have an HTML element with the ID that matches the one provided to the NanoMoneyWidget constructor ("widget-container" in this case). This is where the widget will be rendered:
 
 ```html
-<div id="widget-container" />
+<div id="widget-container" style="position: fixed; right: 0; bottom: 0;" />
 ```
 
 The full NextJS example can be found in [examples/next](example/next/README.md) directory.

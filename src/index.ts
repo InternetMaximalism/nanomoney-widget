@@ -5,7 +5,7 @@ interface WidgetOptions {
   onLoad?: () => void;
 }
 
-const NANO_MONEY_URL = "https://stage.nanomoney.plasmanext.xyz/widget";
+const NANO_MONEY_URL = "https://nanomoney-team-intmaxio-s-team.vercel.app";
 
 export class NanoMoneyWidget {
   constructor(private containerId: string, private options: WidgetOptions) {}
@@ -57,7 +57,7 @@ export class NanoMoneyWidget {
     iframe.setAttribute("allow", `publickey-credentials-get ${walletUrl}`);
     Object.assign(iframe.style, {
       width: this.options.style?.width || "400px",
-      height: this.options.style?.height || "600px",
+      height: this.options.style?.height || "700px",
       border: this.options.style?.border || "none",
       ...this.options.style,
     });

@@ -10,8 +10,6 @@ export default function Home() {
     if (containerRef.current) {
       const walletWidget = new NanoMoneyWidget(containerRef.current.id, {
         clientId: "your-client-id",
-        // url: "",
-        style: { width: "800px" },
       });
       walletWidget.mount();
     }
@@ -23,6 +21,6 @@ export default function Home() {
   }, []);
 
   return (
-    <div id="widget-container" ref={containerRef} style={{ height: "100%" }} />
+    <div id="widget-container" ref={containerRef} style={{ position: "fixed", bottom: "0", right: "0" }} />
   );
 }
