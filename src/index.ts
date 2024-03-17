@@ -5,7 +5,7 @@ interface WidgetOptions {
   onLoad?: () => void;
 }
 
-const NANO_MONEY_URL = "https://nanomoney-team-intmaxio-s-team.vercel.app";
+const NANO_MONEY_URL = "https://widget.nanomoney.plasmanext.io/";
 
 export class NanoMoneyWidget {
   constructor(private containerId: string, private options: WidgetOptions) {}
@@ -27,7 +27,6 @@ export class NanoMoneyWidget {
     const widgetUrl = walletUrl + (queryParams ? `?${queryParams}` : "");
 
     this.configureIframe(iframe, widgetUrl, walletUrl);
-    this.setupIframeListener(iframe, walletUrl);
 
     iframe.onload = () => {
       if (this.options.onLoad) {
@@ -61,23 +60,6 @@ export class NanoMoneyWidget {
       border: this.options.style?.border || "none",
       ...this.options.style,
     });
-  }
-
-  private setupIframeListener(iframe: HTMLIFrameElement, walletUrl: string) {
-    const onIframeReady = (event: MessageEvent) => {
-      if (
-        event.data.type &&
-        event.data.type === "iframeReady" &&
-        iframe.contentWindow
-      ) {
-        const message = {
-          type: "applyOptions",
-          contentOptions: {},
-        };
-        iframe.contentWindow.postMessage(message, walletUrl);
-      }
-    };
-    window.addEventListener("message", onIframeReady);
   }
 }
 
