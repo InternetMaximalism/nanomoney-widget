@@ -1,5 +1,6 @@
 interface WidgetOptions {
   clientId: string;
+  position?: "left" | "right"; // [default: right]
   url?: string;
   style?: { [key: string]: string };
   onLoad?: () => void;
@@ -37,7 +38,7 @@ export class NanoMoneyWidget {
   }
 
   private buildQueryParams(): string {
-    const allowedKeys = ["clientId"];
+    const allowedKeys = ["clientId", "position"];
     const queryParams = new URLSearchParams();
     for (const [key, value] of Object.entries(this.options)) {
       if (allowedKeys.includes(key) && value) {
