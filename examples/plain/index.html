@@ -3,23 +3,15 @@
     <title>Plain Example</title>
   </head>
   <body>
-    <div id="widget-container" style="position: fixed; bottom: 0; right: 0" />
-    <script>
-      const NANO_MONEY_URL = "https://widget.nanomoney.plasmanext.io/";
-
-      const container = document.getElementById("widget-container");
-      const iframe = document.createElement("iframe");
-      const walletUrl = NANO_MONEY_URL;
-      const widgetUrl = walletUrl;
-
-      iframe.setAttribute("src", widgetUrl);
-      iframe.setAttribute("allow", `publickey-credentials-get ${walletUrl}`);
-      Object.assign(iframe.style, {
-        width: "400px",
-        height: "700px",
-        border: "none",
+    <div>
+      <div id="widget-container" style="position: fixed; bottom: 0; right: 0" />
+    </div>
+    <script type="module">
+      import NanoMoneyWidget from 'https://cdn.jsdelivr.net/npm/nanomoney-widget@0.0.1/+esm'
+      const walletWidget = new NanoMoneyWidget("widget-container", {
+        clientId: "your-client-id",
       });
-      container.appendChild(iframe);
+      walletWidget.mount();
     </script>
   </body>
 </html>
