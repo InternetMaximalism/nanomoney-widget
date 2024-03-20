@@ -8,6 +8,11 @@ interface WidgetOptions {
 
 const NANO_MONEY_URL = "https://widget.nanomoney.plasmanext.io/";
 
+const initialButtonSize = {
+  width: "112px",
+  height: "132px",
+};
+
 export class NanoMoneyWidget {
   constructor(private containerId: string, private options: WidgetOptions) {}
 
@@ -28,7 +33,8 @@ export class NanoMoneyWidget {
     const widgetUrl = walletUrl + (queryParams ? `?${queryParams}` : "");
 
     this.configureIframe(iframe, widgetUrl, walletUrl);
-
+    this.setupIframeListener(iframe, walletUrl);
+    // iframe.id = "iframe-content"
     iframe.onload = () => {
       if (this.options.onLoad) {
         this.options.onLoad();
@@ -56,11 +62,25 @@ export class NanoMoneyWidget {
     iframe.setAttribute("src", widgetUrl);
     iframe.setAttribute("allow", `publickey-credentials-get ${walletUrl}`);
     Object.assign(iframe.style, {
-      width: this.options.style?.width || "400px",
-      height: this.options.style?.height || "700px",
       border: this.options.style?.border || "none",
+      ...initialButtonSize,
       ...this.options.style,
     });
+  }
+
+  private setupIframeListener(iframe: HTMLIFrameElement, walletUrl: string) {
+    const onTogglePopup = (event: MessageEvent) => {
+      if (event.origin !== new URL(walletUrl).origin) return;
+      if (event.data.type === "popupOpen") {
+        Object.assign(iframe.style, {
+          width: this.options.style?.width || "100vw",
+          height: this.options.style?.height || "700px",
+        });
+      } else if (event.data.type === "popupClose") {
+        Object.assign(iframe.style, initialButtonSize);
+      }
+    };
+    window.addEventListener("message", onTogglePopup, false);
   }
 }
 
