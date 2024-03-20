@@ -10,8 +10,7 @@ export default function Home() {
     if (containerRef.current) {
       const walletWidget = new NanoMoneyWidget(containerRef.current.id, {
         clientId: "your-client-id",
-        position: "left",
-        url: "http://localhost:3000/"
+        position: "left"
       });
       walletWidget.mount();
     }
