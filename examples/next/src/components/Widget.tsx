@@ -22,6 +22,6 @@ export default function Home() {
   }, []);
 
   return (
-    <div id="widget-container" ref={containerRef} style={{ position: "fixed", bottom: "-6px", left: "0" }} />
+    <div id="widget-container" ref={containerRef} style={{ position: "fixed", bottom: "-6px", left: "0", zIndex: "1000" }} />
   );
 }
