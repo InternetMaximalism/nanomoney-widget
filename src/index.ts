@@ -1,3 +1,5 @@
+import { Storage } from "./storage.js";
+
 interface WidgetOptions {
   clientId: string;
   position?: "left" | "right"; // [default: right]
@@ -12,6 +14,15 @@ const initialButtonSize = {
   width: "112px",
   height: "132px",
 };
+
+const MessageType = {
+  POPUP_OPEN: "popupOpen",
+  POPUP_CLOSE: "popupClose",
+  SYNC_STATE_TO_IFRAME: "syncStateToIframe",
+  SEND_STATE_TO_PARENT: "sendStateToParent",
+};
+
+const NANOMONEY_LOCAL_STORAGE_KEY = "nanomoney-widget.account.store";
 
 export class NanoMoneyWidget {
   constructor(private containerId: string, private options: WidgetOptions) {}
@@ -32,9 +43,9 @@ export class NanoMoneyWidget {
     const walletUrl = this.options.url || NANO_MONEY_URL;
     const widgetUrl = walletUrl + (queryParams ? `?${queryParams}` : "");
 
-    this.configureIframe(iframe, widgetUrl, walletUrl);
+    this.configureIframe(iframe, widgetUrl);
     this.setupIframeListener(iframe, walletUrl);
-    // iframe.id = "iframe-content"
+
     iframe.onload = () => {
       if (this.options.onLoad) {
         this.options.onLoad();
@@ -54,13 +65,8 @@ export class NanoMoneyWidget {
     return queryParams.toString();
   }
 
-  private configureIframe(
-    iframe: HTMLIFrameElement,
-    widgetUrl: string,
-    walletUrl: string
-  ): void {
+  private configureIframe(iframe: HTMLIFrameElement, widgetUrl: string): void {
     iframe.setAttribute("src", widgetUrl);
-    iframe.setAttribute("allow", `publickey-credentials-get ${walletUrl}`);
     Object.assign(iframe.style, {
       border: this.options.style?.border || "none",
       ...initialButtonSize,
@@ -71,16 +77,50 @@ export class NanoMoneyWidget {
   private setupIframeListener(iframe: HTMLIFrameElement, walletUrl: string) {
     const onTogglePopup = (event: MessageEvent) => {
       if (event.origin !== new URL(walletUrl).origin) return;
-      if (event.data.type === "popupOpen") {
-        Object.assign(iframe.style, {
-          width: this.options.style?.width || "100vw",
-          height: this.options.style?.height || "700px",
-        });
-      } else if (event.data.type === "popupClose") {
-        Object.assign(iframe.style, initialButtonSize);
+      if (!event.data.type) return;
+      switch (event.data.type) {
+        case MessageType.POPUP_OPEN:
+          this.adjustIframeStyle(iframe, { width: "100vw", height: "700px" });
+          this.syncStateWithIframe(iframe, walletUrl);
+          break;
+        case MessageType.POPUP_CLOSE:
+          this.adjustIframeStyle(iframe, initialButtonSize);
+          break;
+        case MessageType.SEND_STATE_TO_PARENT:
+          this.sendStateToParent(iframe, event.data.state);
+          break;
       }
     };
+
     window.addEventListener("message", onTogglePopup, false);
+  }
+
+  private adjustIframeStyle(
+    iframe: HTMLIFrameElement,
+    { width, height }: { width: string; height: string }
+  ) {
+    const style = {
+      width: this.options.style?.width || width,
+      height: this.options.style?.height || height,
+    };
+    Object.assign(iframe.style, style);
+  }
+
+  private syncStateWithIframe(iframe: HTMLIFrameElement, walletUrl: string) {
+    if (iframe.contentWindow) {
+      const state = Storage.get(NANOMONEY_LOCAL_STORAGE_KEY);
+      const message = {
+        type: MessageType.SYNC_STATE_TO_IFRAME,
+        state,
+      };
+      iframe.contentWindow.postMessage(message, walletUrl);
+    }
+  }
+
+  private sendStateToParent(iframe: HTMLIFrameElement, state: any) {
+    if (iframe.contentWindow) {
+      Storage.set(NANOMONEY_LOCAL_STORAGE_KEY, state);
+    }
   }
 }
 
