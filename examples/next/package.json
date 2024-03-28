@@ -6,10 +6,10 @@
     "start": "next start"
   },
   "dependencies": {
-    "react": "^18",
-    "react-dom": "^18",
+    "nanomoney-widget": "^0.0.6",
     "next": "14.0.4",
-    "nanomoney-widget": "file:../../"
+    "react": "^18",
+    "react-dom": "^18"
   },
   "devDependencies": {
     "@types/node": "^20",

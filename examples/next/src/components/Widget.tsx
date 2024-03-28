@@ -1,6 +1,6 @@
 "use client";
 
-import NanoMoneyWidget from "nanomoney-widget";
+import { NanoMoneyWidget } from "nanomoney-widget";
 import { useEffect, useRef } from "react";
 
 export default function Home() {
